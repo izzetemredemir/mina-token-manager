@@ -1,95 +1,61 @@
 # Mina Token Manager
 
-Mina Token Manager is a web application built with Next.js and TypeScript that allows users to deploy, mint, transfer, and manage fungible tokens on the Mina Protocol. This tool leverages Mina's powerful zero-knowledge technology to provide a user-friendly interface for token management.
+A browser app for deploying and managing fungible tokens on Mina. It is aimed at developers who want to try the Mina fungible token standard (deploy, mint, transfer, check balances) from a UI, with Auro Wallet, instead of writing scripts. The hosted demo is no longer online.
 
-## Features
+> **Status:** archived. Built in 2024. Kept for reference, not maintained.
 
-- Deploy new fungible tokens on the Mina Protocol
-- Mint tokens to specified addresses
-- Transfer tokens between accounts
-- Check token balances
-- Manage multiple tokens
-- Support for both Devnet and Mainnet
+![Mina Token Manager home page](https://github.com/user-attachments/assets/63691bef-979c-40fd-b46f-10c3bc5f3b74)
 
-  
+> **Warning:** for testing and development only, not for real funds. Deploying a token asks for a fee payer private key in the browser, and each new token's generated admin private key is stored in the browser's localStorage. For production use, see the official [Mina fungible token](https://github.com/MinaFoundation/mina-fungible-token) repository.
 
-## Live Demo
+## What it does
 
-You can try out the Mina Token Manager at [https://minatokenmanager.com/](https://minatokenmanager.com/)
+- Deploys a new token (a `FungibleToken` contract plus its `FungibleTokenAdmin` contract) with a chosen symbol, decimals and source URL. The transaction is proved with o1js in a Web Worker and sent through Auro Wallet.
+- Mints tokens to a recipient address, authorized by the token's admin key.
+- Transfers tokens from the connected Auro Wallet account to another address, and checks the token balance of any public key.
+- Shows token details such as circulating supply and decimals.
+- Keeps a "My Tokens" list in localStorage, including tokens imported by address and admin keys.
+- Switches between Mina Devnet and Mainnet from the header.
 
-![6024073850825851820](https://github.com/user-attachments/assets/63691bef-979c-40fd-b46f-10c3bc5f3b74)
+## Tech stack
 
+- TypeScript, Next.js 14 (pages router), React 18, Tailwind CSS
+- o1js 1.x, Auro Wallet
+- Fungible token contracts built on `TokenContractV2`, adapted from the Mina Foundation's [mina-fungible-token](https://github.com/MinaFoundation/mina-fungible-token)
+- COOP/COEP headers and `coi-serviceworker`, which o1js needs to run in the browser
+- GraphQL endpoints from MinaExplorer (Devnet) and Minascan (Mainnet) for account and nonce lookups
 
+## Running it locally
 
-## Warning
+Requires Node.js 18 or later and the Auro Wallet browser extension. The UI imports the compiled contracts from `contracts/build`, so build the contracts first:
 
-This application is for testing and development purposes only. It is not secure for use with real funds. We recommend using the official [Mina Fungible Token repository](https://github.com/MinaFoundation/mina-fungible-token/tree/main) for production use.
+```bash
+cd contracts
+npm install
+npm run build
 
-## Prerequisites
+cd ../ui
+npm install
+npm run dev
+```
 
-- Node.js (v14 or later)
-- npm or yarn
-- Auro Wallet browser extension
+Then open http://localhost:3000.
 
-## Getting Started
+## Project structure
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/izzetemredemir/mina-token-manager.git
-   cd mina-token-manager
-   ```
-
-2. Install dependencies:
-   ```
-   npm install
-   # or
-   yarn install
-   ```
-
-3. Run the development server:
-   ```
-   npm run dev
-   # or
-   yarn dev
-   ```
-
-4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
-
-## Project Structure
-
-- `pages/`: Contains the main pages of the application (index, deploy, token, my-tokens)
-- `components/`: Reusable React components (Header, Footer, DeployForm, MintForm, TransferForm, etc.)
-- `styles/`: Global styles and CSS modules
-- `public/`: Static assets
-
-## Key Components
-
-- `DeployForm`: Handles the deployment of new tokens
-- `MintForm`: Allows minting of tokens to specified addresses
-- `TransferForm`: Facilitates token transfers between accounts
-- `BalanceForm`: Checks token balances for given addresses
-
-## Network Support
-
-The application supports both Devnet and Mainnet. Users can switch between networks using the network selector in the header.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request to our [GitHub repository](https://github.com/izzetemredemir/mina-token-manager).
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+```
+.
+├── contracts/   o1js FungibleToken and FungibleTokenAdmin contracts
+└── ui/          Next.js app
+    └── src/
+        ├── pages/        index, deploy, token, my-tokens, plus the o1js Web Worker
+        └── components/   Header, Footer, DeployForm, MintForm, TransferForm, BalanceForm
+```
 
 ## Disclaimer
 
-This project is not affiliated with or endorsed by O(1) Labs or the Mina Foundation. Use at your own risk.
+Not affiliated with or endorsed by O(1) Labs or the Mina Foundation.
 
-## Learn More
+## License
 
-To learn more about the technologies used in this project, check out the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Mina Protocol Documentation](https://docs.minaprotocol.com/)
-- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+MIT, see [LICENSE](LICENSE). The `contracts/` folder keeps its own Apache-2.0 license ([contracts/LICENSE](contracts/LICENSE)), matching the Mina Foundation code it is adapted from.
